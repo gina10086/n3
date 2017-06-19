@@ -1,0 +1,4 @@
+build/*.js
+config/*.js
+src/N3Components
+src/router/router.config.js
