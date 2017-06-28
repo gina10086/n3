@@ -1,7 +1,17 @@
-import ProjectControl from 'components/ProjectControl/ProjectControl.config.js'
-import hello from 'components/hello/hello.config.js'
+import ProjectControl from 'components/ProjectControl/ProjectControl.config'
+import ProjectOverview from 'components/ProjectOverview/ProjectOverview.config'
+import research from 'components/research/research.config'
+import recommend from 'components/recommend/recommend.config'
+import ResourceMigration from 'components/ResourceMigration/ResourceMigration.config'
+import DeliveryManagement from 'components/DeliveryManagement/DeliveryManagement.config'
+import hello from 'components/hello/hello.config'
 let routerConfig = [
     ProjectControl,
+    ProjectOverview,
+    research,
+    recommend,
+    ResourceMigration,
+    DeliveryManagement,
     hello
 ]
 
@@ -40,5 +50,44 @@ function checkMenuConfiguration (provider) {
 	const allDefined = isDefined(provider.name) && isDefined(provider.link) && isDefined(provider.component)
 	return isJson && allDefined
 }
-console.log(routerConfig)
-export default routerConfig
+
+let aMenus = []
+let aRoutes = []
+routerConfig.forEach(function(value, index, arr){
+	aMenus.push(value.menu)
+	value.router.forEach(function(router, index){
+		aRoutes.push(router)
+	})
+})
+
+function resolveRoute (state) {
+	let routePath = '/'
+	aRoutes.forEach(function(route){
+		if (route.name == state) {
+			routePath = route.path
+		}else if(route.children){
+			route.children.forEach(function(child){
+				if(child.name == state) {
+					routePath = route.path + '/' + child.path
+				}
+			})
+		}
+	})
+	return routePath
+}
+aMenus.forEach(function(menu){
+	if(menu.type == 'dropdown' && menu.children) {
+		menu.children.forEach(function(child){
+			child.state = resolveRoute(child.state)
+			child.isActive = false
+		})
+		menu.children.sort((a, b) => a.priority < b.priority)
+	}else {
+		menu.state = resolveRoute(menu.state)
+		menu.isActive = false
+	}
+})
+console.log(aMenus)
+aMenus.sort((a, b) => a.priority < b.priority)
+
+export default {aMenus, aRoutes}

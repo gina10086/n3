@@ -7,12 +7,10 @@ export default {
 			component: hello
 		}
 	],
-	menu: [
-		{
-			name: 'hello',
-			icon: 'ico-monitor',
-      type: 'link',
-      state: 'hello'
-		}
-	]
+	menu: {
+		name: 'hello',
+		icon: 'ico-monitor',
+    type: 'link',
+    state: 'hello'
+	}
 }

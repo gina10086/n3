@@ -23,6 +23,35 @@ var autoOpenBrowser = !!config.dev.autoOpenBrowser
 var proxyTable = config.dev.proxyTable
 
 var app = express()
+
+// api设置
+var appData = require('../data.json');
+var table1 = appData.table1;
+var table2 = appData.table2;
+var table3 = appData.table3;
+
+var apiRoutes = express.Router();
+
+apiRoutes.get('/table1', function (req, res) {
+  res.json({
+    errno: 0,
+    data: table1
+  });
+});
+apiRoutes.get('/table2', function (req, res) {
+  res.json({
+    errno: 0,
+    data: table2
+  });
+});
+apiRoutes.get('/table3', function (req, res) {
+  res.json({
+    errno: 0,
+    data: table3
+  });
+});
+app.use('/api', apiRoutes);
+
 var compiler = webpack(webpackConfig)
 
 var devMiddleware = require('webpack-dev-middleware')(compiler, {

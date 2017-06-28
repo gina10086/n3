@@ -3,29 +3,42 @@ import Vue from 'vue'
 import Router from 'vue-router'
 
 Vue.use(Router)
-let aRouters = []
-let aMenus = []
 
-function forEachFn (eachProvider, pushProvider){
-  eachProvider.forEach(function(val){
-    pushProvider.push(val)
-  })
-}
-
-routerConfig.forEach(function(currentValue){
-  const router = currentValue.router
-  const menu = currentValue.menu
-  forEachFn(router, aRouters)
-
-  if (menu){
-    forEachFn(menu, aMenus)
-  }
+const routerProvider = new Router({
+  routes: routerConfig.aRoutes,
+  mode: 'history'
 })
-aRouters.mode = 'history'
-let routerProvider = new Router({
-  routes: aRouters
+routerProvider.beforeEach((to, from, next) => {
+  let menus = routerConfig.aMenus
+  const statePath = to.fullPath
+  menus.forEach((v, i, a) => {
+    if (v.state) {
+      a[i].isActive = (v.state == statePath)
+      if (v.state == statePath) {
+        to.meta.father = {
+          path: v.state,
+          name: v.name
+        }
+      }
+    } else if (v.children){
+      v.children.forEach((child, index, arr) => {
+        arr[index].isActive = (child.state == statePath)
+        if (child.state == statePath) {
+          to.meta.child = {
+            path: child.state,
+            name: child.name
+          }
+          to.meta.father = {
+            name: v.name
+          }
+        }
+      })
+    }
+  })
+  routerConfig.aMenus = menus
+  next()
 })
 export default {
   routerProvider,
-  aMenus
+  aMenus: routerConfig.aMenus
 }

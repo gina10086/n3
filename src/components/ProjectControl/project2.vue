@@ -5,13 +5,12 @@
 </template>
 
 <script type="text/ecmascript-6">
-
 export default {
-  name: 'projectControl-list',
+  name: 'projectControl-list2',
   data () {
     return {
       crumbsData: {
-        name: '项目列表',
+        name: '项目列表2',
         link: '/hello'
       }
     }
