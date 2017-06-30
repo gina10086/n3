@@ -1,6 +1,6 @@
 <template>
   <div>
-    <crumbs></crumbs>
+		<crumbs></crumbs>
   </div>
 </template>
 

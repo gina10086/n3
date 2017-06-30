@@ -9,10 +9,10 @@ export default {
 	],
 	menu: {
 		name: '项目概览',
-		icon: 'icon icon-tree',
+		icon: 'fa fa-tree',
     type: 'link',
     priority: 4.1,
-    state: 'ProjectOverview',
+    state: '/ProjectOverview',
     blank: false
 	}
 }

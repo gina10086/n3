@@ -4,30 +4,30 @@ import point from './point/point'
 import overview from './overview/overview'
 export default {
 	router: [
-		{
-			name: 'ApplicationMigration',
-			path: '/ApplicationMigration',
-			component: ApplicationMigration
-		},
-		{
-			name: 'DataMigration',
-			path: '/DataMigration',
-			component: DataMigration
-		},
-		{
-			name: 'point',
-			path: '/point',
-			component: point
-		},
     {
-      name: 'overview',
-      path: '/overview',
+      name: 'recommend-ApplicationMigration',
+      path: '/recommend/ApplicationMigration',
+      component: ApplicationMigration
+    },
+    {
+      name: 'recommend-DataMigration',
+      path: '/recommend/DataMigration',
+      component: DataMigration
+    },
+    {
+      name: 'recommend-point',
+      path: '/recommend/point',
+      component: point
+    },
+    {
+      name: 'recommend-overview',
+      path: '/recommend/overview',
       component: overview
     }
 	],
 	menu: {
 		name: '方案推荐',
-		icon: 'icon icon-view',
+		icon: 'fa fa-tasks',
     type: 'dropdown',
     priority: 4.1,
     children: [
@@ -35,28 +35,28 @@ export default {
   			name: '方案指引',
   	    type: 'link',
   	    priority: 4.1,
-  	    state: 'point',
+  	    state: '/recommend/point',
   	    blank: false
   		},
   		{
   			name: '方案概述',
   	    type: 'link',
   	    priority: 4.1,
-  	    state: 'overview',
+  	    state: '/recommend/overview',
   	    blank: false
   		},
   		{
   			name: '应用迁移方案',
   	    type: 'link',
   	    priority: 4.1,
-  	    state: 'ApplicationMigration',
+  	    state: '/recommend/ApplicationMigration',
   	    blank: false
   		},
       {
         name: '数据迁移方案',
         type: 'link',
         priority: 4.1,
-        state: 'DataMigration',
+        state: '/recommend/DataMigration',
         blank: false
       }
     ]

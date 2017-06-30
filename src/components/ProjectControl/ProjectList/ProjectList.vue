@@ -1,12 +1,12 @@
 <template>
-	<div>
-    <crumbs></crumbs>overview
+  <div>
+		<crumbs></crumbs>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
 export default {
-  name: 'overview'
+  name: 'ProjectList'
 }
 </script>
 

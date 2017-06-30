@@ -1,5 +1,7 @@
 <template>
-  <div><crumbs></crumbs></div>
+  <div>
+  	<crumbs></crumbs>
+  </div>
 </template>
 
 <script type="text/ecmascript-6">

@@ -16,9 +16,7 @@ Vue.component('crumbs', crumbs)
 Vue.component('tablePagination', tablePagination)
 Vue.component('cxnTable', cxnTable)
 Vue.prototype.$menuProvider = router.aMenus
-Vue.prototype.API = 'http://localhost:8089/src/mock'
 Vue.config.productionTip = false
-console.log(Vue.config)
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

@@ -1,41 +1,26 @@
 <template>
   <div id="bar" class="bar">
-    <!-- <ul class="bar-list">
-      <li class="bar-sub" v-for="(father, index) in menuProvider">
-        <a v-if="father.type == 'dropdown'" href="javascript:;">
-          <i :class="father.icon || 'ico-dashboard'"></i>
-          <span>{{father.name}}</span>
-          <i class="bar-status"></i>
-        </a>
-         <ul v-if="father.type == 'dropdown' && father.children" class="bar-sublist">
-          <li v-for="(child, index) in father.children">
-            <router-link :to="child.state" :class="child.isActive ? 'active' : ''">{{child.name}}</router-link>
-          </li>
-        </ul>
-        <router-link v-if="father.type != 'dropdown'" :to="father.state"><i :class="father.icon || 'ico-dashboard'"></i>{{father.name}}</router-link> 
-      </li>
-    </ul> -->
     <ul class="bar-list">
-      <li>
-        <a href="javascript:;" class="dropdown">
-          <i class="fa fa-tree"></i>
-          <span>父级</span>
-          <i class="bar-status fa fa-angle-right"></i>
+      <li v-for="(father, index) in menuProvider" :class="{active:father.isActive}">
+        <router-link v-if="father.type != 'dropdown'" :to="father.state" v-on:click.native="openMenu($event)" :class="{active:father.isActive}"><i :class="'ico ' + (father.icon || 'ico-dashboard')"></i><span>{{father.name}}{{father.isActive}}</span></router-link> 
+        <a v-if="father.type == 'dropdown'" href="javascript:;" v-on:click.stop="openMenu($event)" class="dropdown" :class="{active:father.isActive}">
+          <i :class="'ico ' + (father.icon || 'ico-dashboard')"></i>
+          {{father.name}}{{father.isActive}}
+          <i class="status fa fa-angle-right"></i>
         </a>
-        <ul>
-          <li>
-            <a href="javascript:;">
-              <span>子级</span>
-              <i class="fa fa-angle-right"></i>
+        <ul v-if="father.type == 'dropdown'">
+          <li v-for="(subList, index) in father.children">
+            <router-link v-if="subList.type != 'dropdown'" :to="subList.state" v-on:click.native="openMenu($event)" :class="{active:subList.isActive}">{{subList.name}}{{subList.isActive}}</router-link> 
+            <a v-if="subList.type == 'dropdown'" href="javascript:;" v-on:click.stop="openMenu($event)" class="dropdown" :class="{active:subList.isActive}">
+              {{subList.name}}{{subList.isActive}}
+              <i class="status fa fa-angle-right"></i>
             </a>
-            <ul>
-              <li>
-                <a href="jac:;">孙子</a>
+            <ul v-if="subList.type == 'dropdown'">
+              <li v-for="(child, index) in subList.children">
+                <router-link v-if="child.type != 'dropdown'" :class="{active:child.isActive}" :to="child.state" v-on:click.native="openMenu($event)">{{child.name}}{{child.isActive}}</router-link> 
               </li>
             </ul>
           </li>
-          <li><a href="#">应用视图</a></li>
-          <li><a href="#">网络趋势图</a></li>
         </ul>
       </li>
     </ul>
@@ -52,27 +37,38 @@
       }
     },
     methods: {
-      menuResolve: function(name){
-        const router = this.routerProvider
-        let res = ''
-        console.log(Array.isArray(router), router)
-        router.forEach(function(value) {
-          if (name == value.name) {
-            res = value.path
-            return
-          } else if (value.children) {
-            value.children.forEach(function(child) {
-              if (name == child.name) {
-                res = value.path + '/' + child.path
-                return
-              }
-            })
-          }
-        })
-        return res
-      },
       openMenu: function (event) {
-
+        let currentObj = event.currentTarget
+        let parent = currentObj.parentNode
+        let childList = parent.children[1]
+        let h = 0
+        if (parent.className.indexOf('active') > -1){
+          if (parent.parentNode.className == 'bar-list' && !childList) {
+            return
+          }
+          if (childList) {
+            let childH = 32 * childList.children.length
+            childList.style.height = 0
+            let parentUl = parent.parentNode
+            parentUl.style.height = (parseInt(window.getComputedStyle(parentUl).height) - childH) + 'px'
+          }
+        } else {
+          if (parent.parentNode.className == 'bar-list') {
+            let lis = document.querySelector('.bar-list').children
+            for (let li of lis) {
+              li.className = ''
+              if (li.children[1]) {
+                li.children[1].style.height = 0
+              }
+            }
+          }
+          if (childList) {
+            let childH = 32 * childList.children.length
+            childList.style.height = (childH + h) + 'px'
+            let parentUl = parent.parentNode
+            parentUl.style.height = parseInt(window.getComputedStyle(parentUl).height) + childH + 'px'
+          }
+        }
       }
     }
   }
@@ -86,37 +82,66 @@
     background: #293542;
     width: 175px;
     height: 100%;
-    /*overflow: hidden;*/
+    overflow: hidden;
     z-index: 200;
     transition: all 0.5s ease;
+    height:100%;
   }
   .bar-list{
-    margin-top: 55px;
-    .dropdown {
-      display:block;
-      position:relative;
-      .bar-status{
-        position:absolute;
-        right:0
-      }
-    }
-    /*li > ul {
-      height:0;
-      overflow:hidden;
-    }*/
-    li {
-      padding-left: 2em;
-    }
+    margin-top: 61px;
     a{
       color: #aeb2b7;
-    }
-    .bar-status {
-      font-family: "iconfont";
-      &:before{
-        content: "\e604";
-        line-height: 12px;
+      display: block;
+      position:relative;
+      line-height:32px;
+      font-size: 12px;
+      &.active {
+        color: #00b494;
+        font-weight: normal;
       }
     }
+    .status,
+    .ico{
+      position:absolute;
+      top:0;
+      line-height: 2em;
+      line-height: 32px;
+    }
+    .status{
+      right: -10px;
+      transition: all .3s;
+    }
+    .ico{
+      left:-17px;
+    }
+   
+    & > li {
+      padding: 0 20px 0 25px;
+      margin: 0 10px;
+      & > ul > li ul {
+        margin-left: 20px
+      }
+      &.active {
+        border-radius: 3px;
+        background: rgb(53, 64, 77);
+      }
+      & > ul > li > .dropdown .status {
+        right: 2px;
+      }
+    }
+    li > ul {
+      transition: height .5s;
+      height: 0;
+      overflow: hidden;
+      
+    }
+    .active {
+      font-weight: bold
+      & > .dropdown > .status {
+        transform: rotate(90deg);
+      }
+    }
+
   }
   
 </style>

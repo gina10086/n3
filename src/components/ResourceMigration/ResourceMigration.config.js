@@ -2,28 +2,49 @@ import BatchDeployment from './ApplicationMigration/BatchDeployment/BatchDeploym
 import MirrorMigration from './ApplicationMigration/MirrorMigration/MirrorMigration'
 import StructuredMigration from './DataMigratio/StructuredMigration/StructuredMigration'
 import UnStructuredMigration from './DataMigratio/UnStructuredMigration/UnStructuredMigration'
-
+import ResourceMigration from './ResourceMigration'
 export default {
 	router: [
-		{
-			name: 'ApplicationMigration-BatchDeployment',
-			path: '/ApplicationMigration/BatchDeployment',
-			component: BatchDeployment
-		},
     {
-      name: '/ApplicationMigration-MirrorMigration',
-      path: '/ApplicationMigration/MirrorMigration',
-      component: MirrorMigration
-    },
-		{
-			name: 'DataMigratio-StructuredMigration',
-			path: '/DataMigratio/StructuredMigration',
-			component: StructuredMigration
-		},
-    {
-      name: 'DataMigratio-UnStructuredMigration',
-      path: '/DataMigratio/UnStructuredMigration',
-      component: UnStructuredMigration
+      name: 'ResourceMigration',
+      path: '/ResourceMigration',
+      component: ResourceMigration,
+      children: [
+        {
+          name: 'ApplicationMigration',
+          path: 'ApplicationMigration',
+          component: ResourceMigration,
+          children: [
+            {
+              name: 'BatchDeployment',
+              component: BatchDeployment,
+              path: 'BatchDeployment'
+            },
+            {
+              name: 'MirrorMigration',
+              component: MirrorMigration,
+              path: 'MirrorMigration'
+            }
+          ]
+        },
+        {
+          name: 'DataMigratio',
+          path: 'DataMigratio',
+          component: ResourceMigration,
+          children: [
+            {
+              name: 'StructuredMigration',
+              component: StructuredMigration,
+              path: 'StructuredMigration'
+            },
+            {
+              name: 'UnStructuredMigration',
+              component: UnStructuredMigration,
+              path: 'UnStructuredMigration'
+            }
+          ]
+        }
+      ]
     }
 	],
 	menu: {
@@ -41,13 +62,13 @@ export default {
             name: '批量部署',
             type: 'link',
             priority: 4.1,
-            state: 'ApplicationMigration-BatchDeployment'
+            state: '/ResourceMigration/ApplicationMigration/BatchDeployment'
           },
           {
             name: '镜像迁移',
             type: 'link',
             priority: 4.1,
-            state: 'ApplicationMigration-MirrorMigration'
+            state: '/ResourceMigration/ApplicationMigration/MirrorMigration'
           }
         ]
   		},
@@ -60,13 +81,13 @@ export default {
             name: '结构化数据迁移',
             type: 'link',
             priority: 4.1,
-            state: 'UnDataMigratio-StructuredMigration'
+            state: '/ResourceMigration/DataMigratio/StructuredMigration'
           },
           {
             name: '非结构化数据迁移',
             type: 'link',
             priority: 4.1,
-            state: 'DataMigratio-UnStructuredMigration'
+            state: '/ResourceMigration/DataMigratio/UnStructuredMigration'
           }
         ]
       }

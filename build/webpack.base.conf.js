@@ -25,7 +25,8 @@ module.exports = {
       'components': resolve('./src/components'),
       'layout':resolve('./src/components/layout'),
       'n3': resolve('./src/N3Components'),
-      'router': resolve('./src/router')
+      'router': resolve('./src/router'),
+      'static': resolve('./static')
     }
   },
   module: {
