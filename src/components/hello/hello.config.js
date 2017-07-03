@@ -11,6 +11,6 @@ export default {
 		name: 'hello',
 		icon: 'ico-monitor',
     type: 'link',
-    state: 'hello'
+    state: '/hello'
 	}
 }

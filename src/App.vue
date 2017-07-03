@@ -9,7 +9,7 @@
         </div>
       </div>
     </div> -->
-    <header>
+    <div class="header">
       <div class="logo" :style="'width:'+menuWidth">
         <i class="fa fa-chain"></i>迁云服务管理平台
       </div>
@@ -20,12 +20,12 @@
           <i class="fa fa-indent" v-show="menuWidth == '50px'" v-on:click="menuWidth = '175px'"></i>
         </div>
       </div>
-    </header>
+    </div>
     <div class="left-bar" :style="'width:'+menuWidth">
       <left-bar ></left-bar>
     </div>
     <div class="right-container">
-      container
+      <router-view></router-view>
     </div>
   </div>
 
@@ -43,6 +43,20 @@
       return {
         menuWidth: '175px'
       }
+    },
+    watch: {
+      menuWidth: function (val) {
+        let leftList = document.querySelector('.bar-list')
+        console.log('menu changed!',  leftList)
+        leftList.className = val == '50px' ?  'bar-list bar-list-closed' : 'bar-list'
+        if (val == '50px') {
+          let ul = leftList.getElementsByTagName('ul')
+          for (let i = 0; i < ul.length; i++) {
+            ul[i].removeAttribute('style')
+            console.log('remove attribute "style"')
+          }
+        }
+      }
     }
   }
 </script>
@@ -56,7 +70,7 @@
     background: #fff;
     padding-top:60px;
   }
-  header{
+  .header{
     position: fixed;
     display: flex;
     top:0;
@@ -65,8 +79,8 @@
     width:100%;
     align-items: center;
     padding: 0 15px 0 0;
-    background: #fff;
-    box-shadow: 0px 0px 9px -2px rgba(0,0,0,.3);
+    background: #293542;
+    color: #fff;
     .logo {
       max-width:175px;
       min-width:50px;
@@ -96,11 +110,12 @@
     background:red;
     max-width:175px;
     min-width:50px;
-    overflow:hidden;
     background: #293542;
+    z-index: 2
   }
   .right-container {
     flex:1;
+    z-index: 1;
   }
   .left-bar-control {
     position:absolute;

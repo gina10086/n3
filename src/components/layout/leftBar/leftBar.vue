@@ -1,36 +1,28 @@
 <template>
-  <ul class="bar-list">
-    <li class="dropdown">
-      <a href="javascript:;" v-on:click.self.stop="openMenu($event)">
-        <i class="fa fa-archive"></i>father
-      </a>
-      <ul>
-        <li><a href="javascript:;">child0</a></li>
-        <li class="dropdown">
-          <a href="javascript:;" v-on:click.self="openMenu($event)">child1</a>
-          <ul class="bar-list-grandson">
-            <li>
-              <a href="javascript:;">grandson</a>
-            </li>
-          </ul>
-        </li>
-        <li class="dropdown">
-          <a href="javascript:;" v-on:click.self="openMenu($event)">child2</a>
-          <ul class="bar-list-grandson">
-            <li>
-              <a href="javascript:;">grandson2</a>
-            </li>
-          </ul>
-        </li>
-      </ul>
-    </li>
-    <li>
-      <a href="javascript:;" v-on:click.self.stop="openMenu($event)"><i class="fa fa-archive"></i>father1</a>
-    </li>
-  </ul>
+  <div>
+    <ul class="bar-list">
+      <li v-for="father in $menuProvider" :class="{dropdown:father.type == 'dropdown'}">
+        <a href="javascript:;" v-if="father.type == 'dropdown'" v-on:click.self.stop="openMenu($event)">
+          <i :class="father.icon"></i>{{father.name}}
+        </a>
+        <router-link v-if="father.type != 'dropdown'" :class="{active:father.isActive}" v-on:click.self.stop.native="openMenu($event)" :to="father.state"><i :class="father.icon || 'fa fa-view'"></i>{{father.name}}</router-link>
+        <ul v-if="father.type == 'dropdown'">
+          <li v-for="child in father.children" :class="{dropdown:child.type == 'dropdown'}">
+            <a href="javascript:;" v-if="child.type == 'dropdown'" v-on:click.self="openMenu($event)">{{child.name}}</a>
+            <router-link v-if="child.type != 'dropdown'" :to="child.state" :class="{active:child.isActive}" v-on:click.self.stop.native="openMenu($event)">{{child.name}}</router-link>
+            <ul v-if="child.type == 'dropdown'" class="bar-list-grandson">
+              <li v-for="grandson in child.children">
+                <router-link :to="grandson.state" v-on:click.self.stop.native="openMenu($event)" :class="{active:grandson.isActive}">{{grandson.name}}</router-link>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </div>
 </template>
 <style lang="stylus" rel="stylesheet/stylus">
-  .bar-list {
+  .bar-list{
     padding: 0 10px;
     a {
       display:block;
@@ -45,6 +37,7 @@
       }
     }
     li {
+      width:100%;
       &.dropdown{
         position: relative;
         &:after {
@@ -103,17 +96,56 @@
     .bar-list-grandson {
       padding-left: 1em;
     }
+    &.bar-list-closed {
+      li {
+        position: relative;
+        &:after {
+          right: 6px;
+        }
+        & > ul {
+          display: none;
+          position:absolute;
+          transition: all .5s;
+          top: 0;
+          left: 120px;
+          opacity: 0;
+          background: #293542;
+          width: 120px;
+          height: auto;
+          z-index: 6;
+          overflow: inherit;
+        }
+        &:hover {
+          & > ul {
+            display: block;
+            opacity: 1;
+          }
+        }
+      }
+      & > li {
+        height: 32px;
+        &:after {
+          right: 10px;
+        }
+        & > a {
+          width: 0;
+          padding: 0;
+          color: rgba(0,0,0,0)
+          & > i {
+            color: #ccc
+          }
+        }
+        & > ul {
+          left: 38px;
+        }
+      }
+    }
   }
+  
 </style>
 <script type="text/ecmascript-6">
   export default {
     name: 'LeftBar',
-    data () {
-      return {
-        routerProvider: this.$routerProvider,
-        menuProvider: this.$menuProvider
-      }
-    },
     methods: {
       childIsActive: function (event) {
       },
@@ -128,20 +160,10 @@
           }
           return h
       },
-      clearActive: function (node) { // node => ul
-        console.log(node)
-        for (let li of node.children) {
-          let child = li.children[1]
-          if (li.className.indexOf('active') > -1) {
-            li.className = li.className.replace('active', '')
-            child.style.height = '0'
-            if (node.className != 'bar-list') {
-              node.style.height = parseInt(node.style.height) - (child.children.length * 32) + 'px'
-            }
-          }
-        }
-      },
       openMenu: function (event) {
+        if (document.querySelector('.bar-list-closed')) {
+          return
+        }
         // 当前点击对象 => a
         let current = event.currentTarget
         // 当前对象父级 => li
@@ -155,12 +177,22 @@
         // 检测当前对象爷爷是否是根目录 'bar-list'
         let isRoot = (parentUl.className == 'bar-list')
         // 当前对象兄弟打开后的高度
-        console.log(liStatus)
         let h = menuList ? 32 * menuList.children.length : 0
         h += this.computedHeight(menuList)
         switch (liStatus) {
           case 'close':
-            this.clearActive(parentUl)
+            for (let i = 0; i < parentUl.children.length; i++) {
+              let li = parentUl.children[i]
+              let ul = li.children[1]
+              if (li.className.indexOf('active') > -1 && ul) {
+                let h = ul.children.length * 32
+                ul.style.height = 0
+                if (!isRoot) {
+                  parentUl.style.height = parseInt(parentUl.style.height) - h + 'px'
+                }
+              }
+              li.className = li.className.replace(' active', '')
+            }
             parentLi.className = parentLi.className + ' active'
             if (menuList) {
               menuList.style.height = h + 'px'

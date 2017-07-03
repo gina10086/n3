@@ -9,9 +9,9 @@ export default {
 	],
 	menu: {
 		name: '交付管理',
-		icon: 'icon icon-tree',
+		icon: 'fa fa-wrench',
     type: 'link',
     priority: 4.1,
-    state: 'DeliveryManagement'
+    state: '/DeliveryManagement'
 	}
 }

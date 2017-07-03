@@ -1,18 +1,6 @@
 <template>
 	<div>
 		<crumbs></crumbs>
-		<!-- <table class="table table-bordered">
-			<thead>
-				<tr>
-					<th v-for="(val, index) in tableData[0]" v-sort>{{index}}</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr v-for="(tr, index) in tableData">
-					<td v-for="(td, index) in tr" :order-by="td">{{index == 'Salary' ? '$'+td : td}}</td>
-				</tr>
-			</tbody>
-		</table> -->
 		<cxn-table :columns="columns" :data="tableData" :operation="['edit', 'view']"></cxn-table>
 		<table-pagination :page="page" :total="total" @update:page="val => page = val"></table-pagination>
 	</div>
