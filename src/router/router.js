@@ -13,36 +13,33 @@ routerProvider.beforeEach((to, from, next) => {
   let menus = routerConfig.aMenus
   let aTemp = []
   menus.forEach((v, i, a) => {
-    if (v.children && v.type == 'dropdown') {
+    v.isActive = false
+    if (v.state && v.state == statePath) {
+      v.isActive = true
+      aTemp = [v.name]
+    } else if (v.type == 'dropdown') {
       v.children.forEach((child) => {
-        if (child.children) {
+        child.isActive = false
+        if (child.state && child.state == statePath) {
+          child.isActive = v.isActive = true
+          aTemp = [v.name, child.name]
+        } else if (child.type == 'dropdown') {
           child.children.forEach((grandson) => {
-            grandson.isActive = (grandson.state == statePath)
-            child.isActive = (grandson.state == statePath)
-            v.isActive = (grandson.state == statePath)
+            grandson.isActive = false
             if (grandson.state == statePath) {
+              grandson.isActive = child.isActive = v.isActive = true
               aTemp = [v.name, child.name, grandson.name]
             }
           })
-        } else {
-          child.isActive = (child.state == statePath)
-          v.isActive = (child.state == statePath)
-          if (child.state == statePath) {
-              aTemp = [v.name, child.name]
-          }
         }
       })
-    } else {
-      v.isActive = (v.state == statePath)
-      if (v.state == statePath) {
-        aTemp = [v.name]
-      }
     }
   })
   to.meta.crumbs = aTemp
   routerConfig.aMenus = menus
   next()
 })
+
 export default {
   routerProvider,
   aMenus: routerConfig.aMenus

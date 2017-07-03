@@ -1,14 +1,5 @@
 <template>
   <div id="app">
-    <!-- <top-bar></top-bar>
-    <left-bar ></left-bar>
-    <div id="page" class="page">
-      <div id="content" class="content">
-        <div class="page-container">
-          <router-view></router-view>
-        </div>
-      </div>
-    </div> -->
     <div class="header">
       <div class="logo" :style="'width:'+menuWidth">
         <i class="fa fa-chain"></i>迁云服务管理平台
@@ -47,15 +38,9 @@
     watch: {
       menuWidth: function (val) {
         let leftList = document.querySelector('.bar-list')
-        console.log('menu changed!',  leftList)
-        leftList.className = val == '50px' ?  'bar-list bar-list-closed' : 'bar-list'
-        if (val == '50px') {
-          let ul = leftList.getElementsByTagName('ul')
-          for (let i = 0; i < ul.length; i++) {
-            ul[i].removeAttribute('style')
-            console.log('remove attribute "style"')
-          }
-        }
+        let closeList = document.querySelector('.bar-list-closed')
+        leftList.style.display = val == '50px' ? 'none' : 'block'
+        closeList.style.display = val == '50px' ? 'block' : 'none'
       }
     }
   }

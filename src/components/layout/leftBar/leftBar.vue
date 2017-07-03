@@ -1,15 +1,11 @@
 <template>
   <div>
     <ul class="bar-list">
-      <li v-for="father in $menuProvider" :class="{dropdown:father.type == 'dropdown'}">
-        <a href="javascript:;" v-if="father.type == 'dropdown'" v-on:click.self.stop="openMenu($event)">
-          <i :class="father.icon"></i>{{father.name}}
-        </a>
-        <router-link v-if="father.type != 'dropdown'" :class="{active:father.isActive}" v-on:click.self.stop.native="openMenu($event)" :to="father.state"><i :class="father.icon || 'fa fa-view'"></i>{{father.name}}</router-link>
+      <li v-for="father in $menuProvider" :class="{dropdown:father.type == 'dropdown',active:father.isActive}">
+        <router-link :class="{active:father.isActive}" v-on:click.self.stop.native="openMenu($event)" :to="father.state || ''"><i :class="father.icon || 'fa fa-view'"></i>{{father.name}}</router-link>
         <ul v-if="father.type == 'dropdown'">
           <li v-for="child in father.children" :class="{dropdown:child.type == 'dropdown'}">
-            <a href="javascript:;" v-if="child.type == 'dropdown'" v-on:click.self="openMenu($event)">{{child.name}}</a>
-            <router-link v-if="child.type != 'dropdown'" :to="child.state" :class="{active:child.isActive}" v-on:click.self.stop.native="openMenu($event)">{{child.name}}</router-link>
+            <router-link :to="child.state || ''" :class="{active:child.isActive}" v-on:click.self.stop.native="openMenu($event)">{{child.name}}</router-link>
             <ul v-if="child.type == 'dropdown'" class="bar-list-grandson">
               <li v-for="grandson in child.children">
                 <router-link :to="grandson.state" v-on:click.self.stop.native="openMenu($event)" :class="{active:grandson.isActive}">{{grandson.name}}</router-link>
@@ -19,9 +15,32 @@
         </ul>
       </li>
     </ul>
+    <ul class="bar-list-closed">
+      <li v-for="father in $menuProvider" :class="{dropdown:father.type == 'dropdown',active:father.isActive}">
+        <router-link :class="{active:father.isActive}" :to="father.state || ''"><i :class="father.icon || 'fa fa-view'"></i></router-link>
+        <ul v-if="father.type == 'dropdown'">
+          <li v-for="child in father.children" :class="{dropdown:child.type == 'dropdown',active:child.isActive}">
+            <router-link :to="child.state || ''" :class="{active:child.isActive}">{{child.name}}</router-link>
+            <ul v-if="child.type == 'dropdown'" class="bar-list-grandson">
+              <li v-for="grandson in child.children" :class="{active:grandson.isActive}">
+                <router-link :to="grandson.state">{{grandson.name}}</router-link>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
   </div>
 </template>
 <style lang="stylus" rel="stylesheet/stylus">
+  @keyframes menu-show {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
   .bar-list{
     padding: 0 10px;
     a {
@@ -59,7 +78,7 @@
         }
       }
       &, * {
-        transition: all .6s;
+        transition: height .6s;
       }
       .active {
         color: #00b494;
@@ -96,48 +115,70 @@
     .bar-list-grandson {
       padding-left: 1em;
     }
-    &.bar-list-closed {
-      li {
-        position: relative;
-        &:after {
-          right: 6px;
-        }
+  }
+  .bar-list-closed {
+    display: none;
+    li {
+      position: relative;
+      & > ul {
+        position: absolute;
+        left: 116px;
+        top: 0;
+        width: 120px;
+        display: none;
+        opacity: 0;
+        background: #293542
+        border-radius: 3px;
+       
+      }
+      a {
+        display: block;
+        color: #aeb2b7;
+        display: block;
+        line-height: 32px;
+        padding: 0 10px;
+      }
+      &:hover {
         & > ul {
-          display: none;
-          position:absolute;
-          transition: all .5s;
-          top: 0;
-          left: 120px;
-          opacity: 0;
-          background: #293542;
-          width: 120px;
-          height: auto;
-          z-index: 6;
-          overflow: inherit;
+          display: block;
+          opacity: 1;
+          animation:menu-show .6s 1;
         }
-        &:hover {
-          & > ul {
-            display: block;
-            opacity: 1;
+        & > a {
+          font-weight: bold;
+          color: #fff;
+        }
+      }
+      &.dropdown {
+        & > a {
+          &:after {
+            position: absolute;
+            right: 7px;
+            font-family: 'FontAwesome';
+            content: '\f105';
+            cursor: pointer;
+            line-height: 32px;
           }
         }
       }
-      & > li {
-        height: 32px;
-        &:after {
-          right: 10px;
-        }
-        & > a {
-          width: 0;
-          padding: 0;
-          color: rgba(0,0,0,0)
-          & > i {
-            color: #ccc
-          }
-        }
-        & > ul {
-          left: 38px;
-        }
+    }
+    & > li {
+      
+      &:hover {
+        color: #fff;
+        background: #35404d
+      }
+      & > a {
+        text-align: center;
+      }
+      & > ul {
+        left: 47px;
+        border-radius: 3px;
+      }
+    }
+    .active{
+      & > a {
+        color: #00b494
       }
     }
   }
@@ -161,9 +202,6 @@
           return h
       },
       openMenu: function (event) {
-        if (document.querySelector('.bar-list-closed')) {
-          return
-        }
         // 当前点击对象 => a
         let current = event.currentTarget
         // 当前对象父级 => li
@@ -191,7 +229,7 @@
                   parentUl.style.height = parseInt(parentUl.style.height) - h + 'px'
                 }
               }
-              li.className = li.className.replace(' active', '')
+              // li.className = li.className.replace(' active', '')
             }
             parentLi.className = parentLi.className + ' active'
             if (menuList) {
