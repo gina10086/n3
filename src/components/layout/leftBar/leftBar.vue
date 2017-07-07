@@ -1,39 +1,18 @@
 <template>
-  <div>
-    <ul class="bar-list">
-      <li v-for="father in $menuProvider" :class="{dropdown:father.type == 'dropdown',active:father.isActive}">
-        <router-link :class="{active:father.isActive}" v-on:click.self.stop.native="openMenu($event)" :to="father.state || ''"><i :class="father.icon || 'fa fa-view'"></i>{{father.name}}</router-link>
-        <ul v-if="father.type == 'dropdown'">
-          <li v-for="child in father.children" :class="{dropdown:child.type == 'dropdown'}">
-            <router-link :to="child.state || ''" :class="{active:child.isActive}" v-on:click.self.stop.native="openMenu($event)">{{child.name}}</router-link>
-            <ul v-if="child.type == 'dropdown'" class="bar-list-grandson">
-              <li v-for="grandson in child.children">
-                <router-link :to="grandson.state" v-on:click.self.stop.native="openMenu($event)" :class="{active:grandson.isActive}">{{grandson.name}}</router-link>
-              </li>
-            </ul>
-          </li>
-        </ul>
-      </li>
+  <li :class="{dropdown: isFolder}">
+    <router-link :to="model.state || ''" @click.native="toggle($event)">
+      <i v-if="isRoot" :class="model.icon || 'fa fa-item'"></i>
+      {{model.name}}
+    </router-link>
+    <ul v-if="isFolder">
+      <left-bar v-for="child in model.children"
+        :model="child" :menuStatus="menuStatus" :isRoot="false">
+      </left-bar>
     </ul>
-    <ul class="bar-list-closed">
-      <li v-for="father in $menuProvider" :class="{dropdown:father.type == 'dropdown',active:father.isActive}">
-        <router-link :class="{active:father.isActive}" :to="father.state || ''"><i :class="father.icon || 'fa fa-view'"></i></router-link>
-        <ul v-if="father.type == 'dropdown'">
-          <li v-for="child in father.children" :class="{dropdown:child.type == 'dropdown',active:child.isActive}">
-            <router-link :to="child.state || ''" :class="{active:child.isActive}">{{child.name}}</router-link>
-            <ul v-if="child.type == 'dropdown'" class="bar-list-grandson">
-              <li v-for="grandson in child.children" :class="{active:grandson.isActive}">
-                <router-link :to="grandson.state">{{grandson.name}}</router-link>
-              </li>
-            </ul>
-          </li>
-        </ul>
-      </li>
-    </ul>
-  </div>
+  </li>
 </template>
 <style lang="stylus" rel="stylesheet/stylus">
-  @keyframes menu-show {
+  @keyframes menu {
     from {
       opacity: 0;
     }
@@ -41,144 +20,111 @@
       opacity: 1;
     }
   }
-  .bar-list{
-    padding: 0 10px;
+  .bar-list {
+    font-size: 12px;
+    width: 175px;
+    min-height: 100%;
+    background: #293542;
+    line-height: 32px;
+    padding: 15px 10px 15px 6px;
+    transition: all .5s;
     a {
-      display:block;
-      color: #aeb2b7;
-      font-size: 12px;
-      line-height:32px;
+      display: block;
+      color: #fff;
+      line-height: 32px;
       &:hover {
-        color: #fff
-      }
-      .active {
-        color: #00b494
+        color:#00b494;
       }
     }
+    & > li > a {
+      overflow:hidden;
+      width: 100%;
+      white-space: nowrap;
+    }
     li {
-      width:100%;
-      &.dropdown{
-        position: relative;
-        &:after {
-          position:absolute;
-          top:0;
-          right:2px;
-          font-family: 'FontAwesome';
-          content: '\f105';
-          cursor: pointer;
-          line-height: 32px;
-        }
-        &:hover {
-          color: #fff;
-        }
-        &.active {
-          &:after {
-            transform:rotate(90deg)
-          }
-        }
-      }
-      &, * {
+      transition: all .3s;
+      position: relative;
+      border-radius: 3px;
+      padding:0 10px;
+      ul {
+        height: 0;
+        margin-left: 6px;
+        overflow: hidden;
         transition: height .6s;
       }
-      .active {
-        color: #00b494;
-      }
-      & > ul {
-        height: 0;
-        overflow: hidden;
-      }
-    }
-    & > li {
-      height:auto;
-      padding:0 15px 0 25px;
-      border-radius: 3px;
-      &:hover,
-      &.active {
-        background: #35404d
-        & > a {
-          font-weight: bold;
-          color: #fff;
-        }
-      }
-      & > a {
-        padding:0 15px 0 0;
-        position:relative;
-        & > i{
-          line-height: 32px;
-          position: absolute;
-          top:0;
-          left:-20px;
-        }
-      }
-    }
-    
-    .bar-list-grandson {
-      padding-left: 1em;
-    }
-  }
-  .bar-list-closed {
-    display: none;
-    li {
-      position: relative;
-      & > ul {
-        position: absolute;
-        left: 116px;
-        top: 0;
-        width: 120px;
-        display: none;
-        opacity: 0;
-        background: #293542
-        border-radius: 3px;
-       
-      }
       a {
-        display: block;
-        color: #aeb2b7;
-        display: block;
-        line-height: 32px;
-        padding: 0 10px;
+        color:#aeb2b7
       }
+      &.dropdown > a:after {
+        font-family: iconfont;
+        position: absolute;
+        content: '\e604';
+        right:2px;
+        top:0;
+        transition: all .3s;
+      }
+      &.active,
       &:hover {
+        background: #35404d;
+      }
+      &.active {
+        & > a {
+          color:#00b494;
+          white-space: nowrap;
+          &:after {
+            transform: rotate(90deg);
+          }
+        }
         & > ul {
           display: block;
-          opacity: 1;
-          animation:menu-show .6s 1;
         }
-        & > a {
-          font-weight: bold;
-          color: #fff;
+
+      }
+    }
+    &.bar-closed {
+      width: 50px;
+      & > li {
+        position: relative;
+        height: 32px;
+        border-radius:0;
+      }
+      
+      li.dropdown > a:after {
+        right: -2px
+      }
+      li.active {
+        & > ul {
+          display: none;
+        }
+        & > a:after {
+          transform:rotate(0deg)
         }
       }
-      &.dropdown {
-        & > a {
-          &:after {
-            position: absolute;
-            right: 7px;
-            font-family: 'FontAwesome';
-            content: '\f105';
-            cursor: pointer;
-            line-height: 32px;
+      li {
+        & > ul {
+          position: absolute;
+          display: none;
+          width: 120px;
+          height: 0;
+          top: 0;
+          right: -118px;
+          background: #35404d;
+          border-radius: 3px;
+          overflow: inherit;
+        }
+        &:hover {
+          & > a {
+            color: #00b494;
+          }
+          & > ul{
+            display: block;
+            height: auto;
+            animation: menu .6s linear;
           }
         }
       }
-    }
-    & > li {
-      
-      &:hover {
-        color: #fff;
-        background: #35404d
-      }
-      & > a {
-        text-align: center;
-      }
-      & > ul {
-        left: 47px;
-        border-radius: 3px;
-      }
-    }
-    .active{
-      & > a {
-        color: #00b494
+      a {
+        word-break:break-all;
       }
     }
   }
@@ -187,66 +133,97 @@
 <script type="text/ecmascript-6">
   export default {
     name: 'LeftBar',
+    props: {
+      model: Object,
+      isRoot: {
+        type: Boolean,
+        default: true
+      },
+      menuStatus: String
+    },
+    computed: {
+      isFolder: function () {
+        return this.model.children && this.model.children.length && this.model.type == 'dropdown'
+      }
+    },
     methods: {
-      childIsActive: function (event) {
+      setParentHeight: function (parentUl, h, type) {
+        if (!this.isRoot && parentUl.nodeName.toLowerCase() == 'ul') {
+          let ph = parseInt(parentUl.style.height)
+          parentUl.style.height = (type ? ph + h : ph - h) + 'px'
+          this.setParentHeight(parentUl.parentNode, h, type)
+        }
       },
-      computedHeight: function (node) {
-          // node 传参为兄弟节点 => ul
-          let h = 0
-          if (node) {
-            for (let li of node.children) {
-              let addH = li.className.indexOf('active') > -1 ? (li.children.length - 1) * 32 : 0
-              h += addH
-            }
+      parentIsActived: function (obj) {
+        let parentUl = obj.parentNode
+        obj.className = obj.className + ' active'
+        let isRoot = parentUl.className.indexOf('active') > -1
+        if (!isRoot) {
+          for (let i = 0; i < parentUl.children.length; i++) {
+            let li = parentUl.children[i]
+            li.className = li.className.replace(' active', '')
           }
-          return h
+          obj.className = obj.className + ' active'
+          this.parentIsActived(parentUl.parentNode)
+        }
       },
-      openMenu: function (event) {
-        // 当前点击对象 => a
-        let current = event.currentTarget
-        // 当前对象父级 => li
-        let parentLi = current.parentNode
-        // 当前对象爷爷 => ul
+      setPrentClass: function(obj) {
+        // obj => li
+        let parentUl = obj.parentNode
+        let isRoot = parentUl.className.indexOf('active') > -1
+        console.log(parentUl.nodeName)
+        if (!isRoot && parentUl.nodeName == 'UL') {
+          for (let i = 0; i < parentUl.children.length; i++) {
+            let li = parentUl.children[i]
+            li.className = li.className.replace(' active', '')
+          }
+          obj.className = obj.className + ' active'
+          this.setPrentClass(parentUl.parentNode)
+        }
+      },
+      toggle: function (e) {
+        let me = e.target
+        let parentLi = me.parentNode
+        if (me.nodeName == 'I') {
+          parentLi = parentLi.parentNode
+        }
         let parentUl = parentLi.parentNode
-        // 当前对象父级是否包含类名 active
-        let liStatus = parentLi.className.indexOf('active') > -1 ? 'open' : 'close'
-        // 当前对象兄弟 => ul
-        let menuList = current.nextElementSibling
-        // 检测当前对象爷爷是否是根目录 'bar-list'
-        let isRoot = (parentUl.className == 'bar-list')
-        // 当前对象兄弟打开后的高度
-        let h = menuList ? 32 * menuList.children.length : 0
-        h += this.computedHeight(menuList)
-        switch (liStatus) {
-          case 'close':
+
+        let siblingUl = me.nextElementSibling
+        let isActived = parentLi.className.indexOf('active') > -1
+        if (this.menuStatus == 'open') {
+          if (isActived) {
+            parentLi.className = parentLi.className.replace(' active', '')
+            if (siblingUl) {
+              let h = parseInt(siblingUl.style.height)
+              siblingUl.style.height = 0
+              this.setParentHeight(parentUl, h, 0)
+            }
+          } else {
             for (let i = 0; i < parentUl.children.length; i++) {
               let li = parentUl.children[i]
-              let ul = li.children[1]
-              if (li.className.indexOf('active') > -1 && ul) {
-                let h = ul.children.length * 32
-                ul.style.height = 0
-                if (!isRoot) {
-                  parentUl.style.height = parseInt(parentUl.style.height) - h + 'px'
+              if (li.className.indexOf('active') > -1) {
+                li.className = li.className.replace(' active', '')
+                if (li.children[1]) {
+                  let h = parseInt(li.children[1].style.height)
+                  li.children[1].style.height = '0px'
+                  this.setParentHeight(parentUl, h, 0)
                 }
               }
-              // li.className = li.className.replace(' active', '')
             }
             parentLi.className = parentLi.className + ' active'
-            if (menuList) {
-              menuList.style.height = h + 'px'
-              if (!isRoot) {
-                parentUl.style.height = parseInt(parentUl.style.height) + h + 'px'
+            if (siblingUl) {
+              let h = 0
+              for (let i = 0; i < siblingUl.children.length; i++) {
+                let li = siblingUl.children[i]
+                h += parseInt(window.getComputedStyle(li, false).height)
               }
+              siblingUl.style.height = h + 'px'
+              this.setParentHeight(parentUl, h, 1)
             }
-            break
-          default:
-            parentLi.className = parentLi.className.replace(' active', '')
-            if (menuList) {
-              menuList.style.height = '0px'
-              if (!isRoot) {
-                parentUl.style.height = parseInt(parentUl.style.height) - h + 'px'
-              }
-            }
+          }
+        } else {
+          this.setPrentClass(parentLi)
         }
       }
     }

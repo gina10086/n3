@@ -9,14 +9,15 @@ import crumbs from 'layout/crumbs/crumbs'
 import cxnTable from 'layout/contains/table/cxnTable'
 import tablePagination from 'layout/contains/table/pagination'
 import directive from './directive/directive'
+import LeftBar from 'components/layout/leftBar/leftBar'
 Vue.use(directive)
 Vue.use(N3Components)
 Vue.use(vueResource)
 Vue.component('crumbs', crumbs)
 Vue.component('tablePagination', tablePagination)
 Vue.component('cxnTable', cxnTable)
+Vue.component('LeftBar', LeftBar)
 Vue.prototype.$menuProvider = router.aMenus
-Vue.prototype.API = 'http://localhost:8089/src/mock'
 Vue.config.productionTip = false
 console.log(Vue.config)
 /* eslint-disable no-new */

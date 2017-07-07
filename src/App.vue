@@ -12,8 +12,11 @@
         </div>
       </div>
     </div>
-    <div class="left-bar" :style="'width:'+menuWidth">
-      <left-bar ></left-bar>
+    <div class="left-bar" :style="{width:menuWidth}">
+      <ul class="bar-list" :class="{'bar-closed': menuWidth == '50px'}">
+        <left-bar :model="model" :menuStatus="menuStatus" :isRoot="true" v-for="(model, index) in menuProvider"></left-bar>
+      </ul>
+
     </div>
     <div class="right-container">
       <router-view></router-view>
@@ -23,24 +26,21 @@
 </template>
 
 <script type="text/ecmascript-6">
-
   import TopBar from 'components/layout/topBar/topBar'
-  import LeftBar from 'components/layout/leftBar/leftBar'
   export default {
     components: {
-      LeftBar, TopBar
+      TopBar
     },
     data () {
       return {
-        menuWidth: '175px'
+        menuWidth: '175px',
+        menuProvider: this.$menuProvider,
+        menuStatus: 'open'
       }
     },
     watch: {
       menuWidth: function (val) {
-        let leftList = document.querySelector('.bar-list')
-        let closeList = document.querySelector('.bar-list-closed')
-        leftList.style.display = val == '50px' ? 'none' : 'block'
-        closeList.style.display = val == '50px' ? 'block' : 'none'
+        this.menuStatus = val == '50px' ? 'close' : 'open'
       }
     }
   }

@@ -3,6 +3,15 @@
 		<crumbs></crumbs>
 		<cxn-table :columns="columns" :data="tableData" :operation="['edit', 'view']"></cxn-table>
 		<table-pagination :page="page" :total="total" @update:page="val => page = val"></table-pagination>
+    <n3-accordion :one-at-atime="false">
+      <n3-panel header="Panel #1" :is-open="true" index="1">
+        ...
+      </n3-panel>
+      <n3-panel header="Panel #2" index="2">
+        ...
+      </n3-panel>
+      
+    </n3-accordion>
 	</div>
 </template>
 

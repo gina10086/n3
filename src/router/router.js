@@ -13,21 +13,15 @@ routerProvider.beforeEach((to, from, next) => {
   let menus = routerConfig.aMenus
   let aTemp = []
   menus.forEach((v, i, a) => {
-    v.isActive = false
     if (v.state && v.state == statePath) {
-      v.isActive = true
       aTemp = [v.name]
     } else if (v.type == 'dropdown') {
       v.children.forEach((child) => {
-        child.isActive = false
         if (child.state && child.state == statePath) {
-          child.isActive = v.isActive = true
           aTemp = [v.name, child.name]
         } else if (child.type == 'dropdown') {
           child.children.forEach((grandson) => {
-            grandson.isActive = false
             if (grandson.state == statePath) {
-              grandson.isActive = child.isActive = v.isActive = true
               aTemp = [v.name, child.name, grandson.name]
             }
           })
