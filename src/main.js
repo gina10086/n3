@@ -6,7 +6,6 @@ import router from './router/router.js'
 import N3Components from 'N3-components'
 import vueResource from 'vue-resource'
 import crumbs from 'layout/crumbs/crumbs'
-import cxnTable from 'layout/contains/table/cxnTable'
 import tablePagination from 'layout/contains/table/pagination'
 import directive from './directive/directive'
 import LeftBar from 'components/layout/leftBar/leftBar'
@@ -15,7 +14,6 @@ Vue.use(N3Components)
 Vue.use(vueResource)
 Vue.component('crumbs', crumbs)
 Vue.component('tablePagination', tablePagination)
-Vue.component('cxnTable', cxnTable)
 Vue.component('LeftBar', LeftBar)
 Vue.prototype.$menuProvider = router.aMenus
 Vue.config.productionTip = false

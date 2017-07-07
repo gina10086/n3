@@ -4,15 +4,13 @@ import research from 'components/research/research.config'
 import recommend from 'components/recommend/recommend.config'
 import ResourceMigration from 'components/ResourceMigration/ResourceMigration.config'
 import DeliveryManagement from 'components/DeliveryManagement/DeliveryManagement.config'
-import hello from 'components/hello/hello.config'
 let routerConfig = [
     ProjectControl,
     ProjectOverview,
     research,
     recommend,
     ResourceMigration,
-    DeliveryManagement,
-    hello
+    DeliveryManagement
 ]
 
 let aMenus = []
