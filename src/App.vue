@@ -40,7 +40,28 @@
     },
     watch: {
       menuWidth: function (val) {
+        let barList = document.querySelector('.bar-list')
+        let aLi = barList.getElementsByTagName('li')
         this.menuStatus = val == '50px' ? 'close' : 'open'
+        for (let i = 0; i < aLi.length; i++) {
+          let li = aLi[i]
+          let childUl = li.children[1]
+          if (li.className.indexOf('active') && childUl) {
+            if (val == '50px') {
+              childUl.removeAttribute('style')
+            } else {
+              let h = 0
+              for (let ii = 0; ii < childUl.children.length; ii++) {
+                let li = childUl.children[ii]
+                li.style.height = 'auto'
+                console.log(li.clientHeight)
+                h += parseInt(window.getComputedStyle(li, false).height)
+              }
+              childUl.style.height = h + 'px'
+              console.log('175')
+            }
+          }
+        }
       }
     }
   }

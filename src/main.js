@@ -15,7 +15,6 @@ Vue.component('crumbs', crumbs)
 Vue.component('LeftBar', LeftBar)
 Vue.prototype.$menuProvider = router.aMenus
 Vue.config.productionTip = false
-console.log(Vue.config)
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
